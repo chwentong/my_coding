@@ -1,7 +1,7 @@
 INFORMATIONS
 ------------
 **PROJECT:** my\_coding
- **Author:** Chen Wentong
+**Author:** Chen Wentong
 
 INTRODUCTION
 ------------
@@ -11,3 +11,8 @@ chwentong:
 INSTALL
 -------
 Just run *$ make* and enjoy.
+
+FILES
+-----
+  dot.vimrc  ->  ~/.vimrc
+  Makefile.tpl  ->  Makefile template

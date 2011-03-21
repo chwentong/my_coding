@@ -13,7 +13,7 @@ vimrc:
 		ANS="Y"; \
 	fi && \
 	if [ "x$$ANS" = "xY" ]; then \
-		install -m 644 -T dot.vimrc $(HOME)/.vimrc && \
+		install -m 0644 -T dot.vimrc $(HOME)/.vimrc && \
 		echo "New .vimrc in $(HOME)/"; \
 	else \
 		echo "Skip."; \
