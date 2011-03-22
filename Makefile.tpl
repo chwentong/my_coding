@@ -1,39 +1,94 @@
 #
-# $Id: Makefile.all,v 1.1.1.1 2005/05/20 19:58:29 gray Exp $
+# Makefile Template
+#
+# @COPYLEFT
+# ALL WRONGS RESERVED
+#
+# Chen Wentong <chwentong@gmail.com>
 #
 
-SOURCES = mpool.c mpool_t.c
-HEADERS	= mpool.h
-OBJECTS	= mpool.o
+# Source list, 
+SOURCES =  
+# Header list, 
+HEADERS	= 
+# Object list, one or more items, 
+OBJECTS	=
+# Program list, one or more items, 
+PROGRAM = 
+# Distribute library, one item only, 
+LIBRARY = 
+# Programs for test use, one or more items, 
+TEST	= 
+# Compile flags, 
+CFLAGS	= -I./ -Wall -O2 $(DEFINES)
+# Library options, 
+LDFLAGS	= 
+# Sub directory list
+SUBDIRS = 
+# Install directory, 
+DESTDIR	= 
+
+# Default target, could be one or more of 'program/library/tests', plus recursive
+ALL:	recursive program 
+
+# All targets in this makefile
+ALLS:	recursive program library tests
+
+# Try to make depends, indent your code and clean your workspace
+CLEAN:	depend indent clean
+
+
+
+##################################################################
+# You should not modify below lines unless you really need to. #
+##################################################################
 
 CC	= gcc
-AR	= ar
+RM  = rm -rf
 MAKEDEP	= makedepend
 RANLIB	= ranlib
+INDENT	= indent
 
-CFLAGS	= -g -I. $(DEFINES)
-LDFLAGS	=
+recursive: $(SUBDIRS)
+	for sd in $(SUBDIRS); do \
+		make -C $$sd; \
+	done
 
-DESTDIR	= /idv
-TEST	= mpool_t
-LIBRARY	= libmpool.a
-
-all: $(LIBRARY)
+cleans: clean
+	for sd in $(SUBDIRS); do \
+		make -C $$sd clean; \
+	done
 
 clean:
-	rm -f a.out core *.o *.t *.bak
-	rm -f $(LIBRARY) $(TEST)
+	$(RM) a.out core *.o *.t *.bak tt.* *~
+	$(RM) $(PROGRAM) $(TEST) $(LIBRARY)
 
-install: $(HEADERS) $(LIBRARY)
-	install -c -m 444 $(HEADERS) $(DESTDIR)/include
-	install -c -m 444 $(LIBRARY) $(DESTDIR)/lib
+install:
+	if [ -n "$(PROGRAM)" ]; then \
+		install -m 0755 $(PROGRAM) $(DESTDIR)/bin; \
+	fi
+	
+	if [ -n "$(LIBRARY)" ]; then \
+		install -m 0644 $(LIBRARY) $(DESTDIR)/lib; \
+	fi
+	
+	if [ -n "$(HEADERS)" ]; then \
+		install -m 0644 $(HEADERS) $(DESTDIR)/include; \
+	fi
 
-$(LIBRARY): $(OBJECTS)
+library: $(OBJECTS)
 	$(AR) cr $(LIBRARY) $?
-	$(RANLIB) $@
+	$(RANLIB) $(LIBRARY)
 
-test: $(TEST).o $(LIBRARY)
-	$(CC) $(LDFLAGS) $(TEST).o -o $(TEST) $(LIBRARY)
+program: $(foreach t, $(PROGRAM), $(t).o) $(OBJECTS)
+	for p in $(PROGRAM); do \
+		$(CC) -o $$p $$p.o $(OBJECTS) $(LDFLAGS); \
+	done
+
+tests: $(foreach t, $(TEST), $(t).o) $(OBJECTS)
+	for t in $(TEST); do \
+		$(CC) -o $$t $$t.o $(OBJECTS) $(LDFLAGS); \
+	done
 
 .c.o:
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -41,8 +96,14 @@ test: $(TEST).o $(LIBRARY)
 depend:
 	$(MAKEDEP) -Y -- $(CFLAGS) -- $(SOURCES) 2>/dev/null
 
+indent:
+	$(INDENT) -linux *.c
+
+.PHONY: depend indent clean recursive
+
 # Caution: ~make depend depends on the following lines!~
 # DO NOT DELETE
 
-mpool.o: mpool.h mpool_loc.h
-mpool_t.o: mpool.h mpool_loc.h
+sequence.o: sequence.h
+seq_db.o: sequence.h
+test_seq.o: sequence.h
